@@ -1,0 +1,16 @@
+import io
+
+for remoteFile in remoteFileList:
+    try:
+        file = s3.Bucket(S3_BUCKET_NAME).Object(remoteFile).get()
+        if('.csv' in remoteFile):
+            print(remoteFile)
+            archivoCsv= pd.read_csv(file['Body'])
+            archivoCsv.to_csv(remoteFile, index=False)
+        else:
+            data = file['Body'].read()
+            archivoExcel= pd.read_excel(io.BytesIO(data), engine='openpyxl')
+            archivoExcel.to_excel(remoteFile, index=False)
+    except Exception as ex:
+        print("No es un archivo.")
+        print(ex)
